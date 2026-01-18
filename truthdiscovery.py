@@ -45,12 +45,13 @@ class TruthFinder(object):
             update[i] = self.influence_related * s + row1["fact_confidence"]
 
         for i, row1 in df.iterrows():
-            df.set_value(i, "fact_confidence", update[i])
+            df.at[i, "fact_confidence"] = update[i]
 
         return df
 
     def calculate_confidence(self, df):
-        trustworthiness_score = lambda x: -math.log(1-x)  # Eq. 3
+        eps = 1e-12
+        trustworthiness_score = lambda x: -math.log(max(eps, 1-min(x, 1-eps)))  # Eq. 3 with clipping
 
         """Calculate confidence for each fact"""
         for i, row in df.iterrows():
@@ -58,13 +59,13 @@ class TruthFinder(object):
             # trustworthiness of corresponding websites `W(f)`
             ts = df.loc[df["fact"] == row["fact"], "trustworthiness"]
             v = sum(trustworthiness_score(t) for t in ts)
-            df.set_value(i, "fact_confidence", v)
+            df.at[i, "fact_confidence"] = v
         return df
 
     def compute_fact_confidence(self, df):
         f = lambda x: sigmoid(self.dampening_factor * x)
         for i, row in df.iterrows():
-            df.set_value(i, "fact_confidence", f(row["fact_confidence"]))
+            df.at[i, "fact_confidence"] = f(row["fact_confidence"])
         return df
 
     def update_fact_confidence(self, df):
@@ -105,6 +106,9 @@ class TruthFinder(object):
             t2 = dataframe.drop_duplicates("website")["trustworthiness"]
 
             if self.stop_condition(t1, t2, threshold):
+                print("iteration: ", i)
+                print("threshold: ", threshold)
                 return dataframe
-
+        print("threshold: ", threshold)
+        print("iteration: ", norm(t2-t1))
         return dataframe

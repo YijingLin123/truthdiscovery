@@ -1,5 +1,17 @@
 # TRUTHFINDER
 
+python agent_aggregation.py --data.path \
+      data/price_ETH_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk@1 \
+      data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk@1 \
+      data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk@1 \
+      --data.start_time 2025-11-27T00:00 \
+      --data.end_time 2025-11-27T00:59 \
+
+python truthfinder_price.py --data.path Agent1=data/
+    price_BTC_USD/foo.pk Agent2=data/price_BTC_USD/bar.pk --mode twap
+    --data.start_time 2024-01-01T00:00 --data.end_time 2024-01-01T01:00
+    --truth.tolerance 10
+
 This is an implementation of TRUTHFINDER: Truth discovery with multiple conflicting information providers on the web, which is a model for finding true facts from a large amount of conflicting information.  
 
 TRUTHFINDER can estimate:

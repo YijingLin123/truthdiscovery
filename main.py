@@ -23,7 +23,6 @@ dataframe = pd.DataFrame([
 vectorizer = TfidfVectorizer(min_df=1)
 vectorizer.fit(dataframe["fact"])
 
-
 def similarity(w1, w2):
     V = vectorizer.transform([w1, w2])
     v1, v2 = np.asarray(V.todense())
